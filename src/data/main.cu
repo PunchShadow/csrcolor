@@ -10,6 +10,8 @@
 #include <set>
 #include "lonestargpu.h"
 #include "variants.h"
+#include "ECLgraph.h"
+
 using namespace std;
 
 #ifndef	ITERATIONS
@@ -258,8 +260,15 @@ int main(int argc, char *argv[]) {
 		mtx2csr(argv[1], m, nnz, csrRowPtr, csrColInd);
 	else if (strstr(argv[1], ".graph"))
 		graph2csr(argv[1], m, nnz, csrRowPtr, csrColInd);
-	else if (strstr(argv[1], ".gr"))
+		else if (strstr(argv[1], ".gr"))
 		gr2csr(argv[1], m, nnz, csrRowPtr, csrColInd);
+	else if (strstr(argv[1], ".egr")){
+		ECLgraph g = readECLgraph(argv[1]);
+		m = g.nodes;   
+		nnz = g.edges; 
+		csrRowPtr = g.nindex;  
+		csrColInd = g.nlist;  
+	}
 	else { printf("Unrecognizable input file format\n"); exit(0); }
 	int *coloring = (int *)calloc(m, sizeof(int));
 	int correct = 1;

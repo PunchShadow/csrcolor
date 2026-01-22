@@ -145,16 +145,27 @@ void color(int m, int nnz, int *csrRowPtr, int *csrColInd, int *coloring, int nu
 	double total_time = 0.0;
 	int total_colors = 0;
 	int total_iterations = 0;
+	double min_time = INT_MAX;
+	int min_colors = INT_MAX;
 	for (int i = 0; i < ITERATIONS; i++) {
-		total_time += runtime[i];
-		total_colors += colors[i];
-		total_iterations += iterations[i];
-		printf("[%d %.2f %d] ", colors[i], runtime[i], iterations[i]);
+		if (colors[i]<min_colors)
+		{
+			min_colors=colors[i];
+			min_time=runtime[i];
+			/* code */
+		}
+		
+		// total_time += runtime[i];
+		// total_colors += colors[i];
+		// total_iterations += iterations[i];
+		// printf("[%d %.2f %d] ", colors[i], runtime[i], iterations[i]);
 	}
-	double avg_time = (double)total_time / ITERATIONS;
-	double avg_colors = (double)total_colors / ITERATIONS;
-	double avg_iterations = (double)total_iterations / ITERATIONS;
-	printf("\navg_time %f ms, avg_colors %.2f avg_iterations %.2f\n", avg_time, avg_colors, avg_iterations);
+	// double avg_time = (double)total_time / ITERATIONS;
+	// double avg_colors = (double)total_colors / ITERATIONS;
+	// double avg_iterations = (double)total_iterations / ITERATIONS;
+	// printf("\navg_time %f ms, avg_colors %.2f avg_iterations %.2f\n", avg_time, avg_colors, avg_iterations);
+	printf("runtime:    %.6f ms\n", min_time);
+	printf("colors used: %d\n", min_colors);
 	CUDA_SAFE_CALL(cudaFree(d_csrRowPtr));
 	CUDA_SAFE_CALL(cudaFree(d_csrColInd));
 	CUDA_SAFE_CALL(cudaFree(d_coloring));

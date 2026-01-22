@@ -14,6 +14,8 @@
 #include "cutil_subset.h"
 #include "common.h"
 #include <vector>
+#include "ECLgraph.h"
+
 #include <set>
 using namespace std;
 
@@ -255,6 +257,13 @@ int main(int argc, char *argv[]) {
 		graph2csr(argv[1], m, nnz, csrRowPtr, csrColInd);
 	else if (strstr(argv[1], ".gr"))
 		gr2csr(argv[1], m, nnz, csrRowPtr, csrColInd);
+	else if (strstr(argv[1], ".egr")){
+		ECLgraph g = readECLgraph(argv[1]);
+		m = g.nodes;   
+		nnz = g.edges; 
+		csrRowPtr = g.nindex;  
+		csrColInd = g.nlist;  
+	}
 	else
 		{ printf("Unrecognizable input file format\n"); exit(0); }
 	if (csrRowPtr == NULL)
@@ -323,12 +332,23 @@ int main(int argc, char *argv[]) {
 	int total_colors = 0;
 	double avg_time;
 	double avg_colors;
-	for (int i = 0; i < 10; i++) {
-		printf("[%.2f %d] ", runtime[i], colors[i]);
-		total_time += runtime[i];
-		total_colors += colors[i];
+	// for (int i = 0; i < 10; i++) {
+	// 	printf("[%.2f %d] ", runtime[i], colors[i]);
+	// 	total_time += runtime[i];
+	// 	total_colors += colors[i];
+	// }
+	// printf("\navg_time %f ms, avg_colors %.2f\n", total_time / 10, (double)total_colors / 10);
+	double min_time = INT_MAX;
+	int min_colors = INT_MAX;
+	for (int i = 0; i < 5; i++) {
+		if (colors[i]<min_colors)
+		{
+			min_colors=colors[i];
+			min_time=runtime[i];
+		}
 	}
-	printf("\navg_time %f ms, avg_colors %.2f\n", total_time / 10, (double)total_colors / 10);
+	printf("runtime:    %.6f ms\n", min_time);
+	printf("colors used: %d\n", min_colors);
 	switch (status) {
 		case CUSPARSE_STATUS_SUCCESS:
 			//printf("success\n");
